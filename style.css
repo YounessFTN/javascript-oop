@@ -1,0 +1,213 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Arial", sans-serif;
+}
+
+body {
+  background-color: #f4f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.main {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  max-width: 1200px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.courses,
+.details {
+  padding: 20px;
+  width: 48%;
+  min-height: 300px;
+}
+
+.courses {
+  background-color: #f9fafb;
+  border-right: 1px solid #e0e4e8;
+}
+
+.courses-actions-container {
+  margin-top: 20px;
+}
+
+.courses-actions-container input {
+  width: calc(100% - 110px);
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.courses-actions-container button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.courses-actions-container button:hover {
+  background-color: #45a049;
+}
+
+#listCourses {
+  list-style: none;
+  padding: 0;
+}
+
+#listCourses li {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.internal-link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.internal-link:hover {
+  text-decoration: none;
+}
+
+.details {
+  background-color: #ffffff;
+}
+
+.details h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+#listPersons {
+  list-style: none;
+  padding: 0;
+}
+
+#listPersons li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f4f7fa;
+}
+
+#listPersons li.professor {
+  background-color: #e7f3e6;
+}
+
+#listPersons li.student {
+  background-color: #e7f3ff;
+}
+
+#listPersons li button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#listPersons li button:hover {
+  background-color: #0056b3;
+}
+
+#listPersons li button:nth-child(2) {
+  background-color: #ff4d4d;
+}
+
+#listPersons li button:nth-child(2):hover {
+  background-color: #e60000;
+}
+
+#btnAddProf,
+#btnAddStud,
+#btnAddRoom {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+#btnAddProf:hover,
+#btnAddStud:hover,
+#btnAddRoom:hover {
+  background-color: #0056b3;
+}
+
+select {
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 16px;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .courses,
+  .details {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .courses-actions-container input {
+    width: 100%;
+  }
+
+  #btnAddCourse {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  .courses-actions-container input {
+    width: 100%;
+  }
+
+  #listCourses li {
+    font-size: 14px;
+  }
+
+  #listPersons li {
+    font-size: 14px;
+  }
+
+  #btnAddProf,
+  #btnAddStud,
+  #btnAddRoom {
+    padding: 8px 16px;
+  }
+}

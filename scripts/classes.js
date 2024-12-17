@@ -27,6 +27,28 @@ class Person {
   }
 }
 
+class Room {
+  #room = "";
+
+  constructor(room) {
+    this.#room = room;
+  }
+
+  get room() {
+    return this.#room;
+  }
+
+  toJSON() {
+    return {
+      name: this.#room,
+    };
+  }
+
+  fromJSON(data) {
+    this.#room = data.name;
+  }
+}
+
 class Professor extends Person {
   #teaches = "";
 
@@ -80,6 +102,7 @@ class Student extends Person {
 class Course {
   #title = "";
   #persons = [];
+  #rooms = [];
 
   constructor(title) {
     this.#title = title;
@@ -91,6 +114,9 @@ class Course {
 
   get persons() {
     return this.#persons;
+  }
+  get rooms() {
+    return this.#rooms;
   }
 
   get students() {

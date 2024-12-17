@@ -1,226 +1,208 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <style>
-      .main {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-      }
+    <link rel="stylesheet" href="style.css" />
 
-      .courses-actions-container {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .internal-link {
-        cursor: pointer;
-        text-decoration: underline;
-        color: blue;
-      }
-
-      .professor {
-        font-weight: bold;
-      }
-
-      .student {
-        font-style: italic;
-      }
-
-      #liste {
-        display: flex;
-        justify-content: space-between;
-        justify-items: center;
-      }
-
-      .details {
-        visibility: hidden;
-        border: 1pt solid black;
-      }
-
-      .details.selected {
-        visibility: visible;
-      }
-    </style>
     <script src="./scripts/classes.js"></script>
     <script lang="js">
-      const courses = [];
-      let currentCourse = null;
-      let listCourses;
+            const courses = [];
+            let currentCourse = null;
+            let listCourses;
 
-      function displayCourses() {
-        courses.forEach(course => {
-            const listItem = document.createElement('li');
-            const linkDetails = document.createElement('span');
+            // 1. Fonctions de gestion des cours
+            function addCourse() {
+              const txtCourseTitle = document.getElementById('txtCourseTitle');
+              const courseTitle = txtCourseTitle.value;
 
-            linkDetails.classList.add('internal-link');
-            linkDetails.innerText = course.title;
-            linkDetails.addEventListener('click', () => {
-                const event = new CustomEvent('courseChange', { detail: { course } });
-
-                document.dispatchEvent(event);
-            })
-
-            listItem.appendChild(linkDetails);
-            listCourses.appendChild(listItem);
-        })
-      }
-
-      function clearCourses() {
-        while(listCourses.children.length > 0) {
-            listCourses.removeChild(listCourses.firstChild);
-        }
-      }
-
-      function refreshCourses() {
-        clearCourses();
-        displayCourses();
-      }
-
-      function addCourse() {
-        const txtCourseTitle = document.getElementById('txtCourseTitle');
-        const courseTitle = txtCourseTitle.value;
-
-        if (courseTitle) {
-            if (courses.some(course => course.title === courseTitle)) {
-                alert('Ce cours existe déjà')
-            } else {
-                const course = new Course(courseTitle);
-
-                courses.push(course);
-                storeCourses();
-                refreshCourses();
+              if (courseTitle) {
+                  if (courses.some(course => course.title === courseTitle)) {
+                      alert('Ce cours existe déjà');
+                  } else {
+                      const course = new Course(courseTitle);
+                      courses.push(course);
+                      storeCourses();
+                      refreshCourses();
+                  }
+              }
             }
-        }
-      }
 
-      function displayCurrentCourse() {
-        if (!currentCourse) {
-            return;
-        }
+            function displayCourses() {
+              courses.forEach(course => {
+                  const listItem = document.createElement('li');
+                  const linkDetails = document.createElement('span');
 
-        const courseTitle = document.getElementById('courseTitle');
+                  linkDetails.classList.add('internal-link');
+                  linkDetails.innerText = course.title;
+                  linkDetails.addEventListener('click', () => {
+                      const event = new CustomEvent('courseChange', { detail: { course } });
+                      document.dispatchEvent(event);
+                  });
 
-        courseTitle.innerText = currentCourse.title;
-        refreshPersons();
-      }
+                  listItem.appendChild(linkDetails);
+                  listCourses.appendChild(listItem);
+              });
+            }
 
-      function clearPersons() {
-          while (listPersons.children.length > 0) {
-              listPersons.removeChild(listPersons.firstChild);
-          }
-      }
+            function clearCourses() {
+              while (listCourses.children.length > 0) {
+                  listCourses.removeChild(listCourses.firstChild);
+              }
+            }
 
-      function displayPersons(course) {
-          course.persons.forEach(person => {
-              const listItem = document.createElement('li');
-              const title = document.createElement('span');
-              title.innerText = person.name;
+            function refreshCourses() {
+              clearCourses();
+              displayCourses();
+            }
 
-              if (person instanceof Professor) {
-                listItem.classList.add('professor');
+            // 2. Fonctions de gestion des personnes (professeurs et étudiants)
+            function displayCurrentCourse() {
+              if (!currentCourse) return;
+
+              const courseTitle = document.getElementById('courseTitle');
+              courseTitle.innerText = currentCourse.title;
+              console.log(currentCourse);
+              refreshPersons();
+            }
+
+            function clearPersons() {
+              while (listPersons.children.length > 0) {
+                  listPersons.removeChild(listPersons.firstChild);
+              }
+            }
+
+            function displayPersons(course) {
+              course.persons.forEach(person => {
+                  const listItem = document.createElement('li');
+                  const title = document.createElement('span');
+                  title.innerText = person.name;
+
+                  if (person instanceof Professor) {
+                      listItem.classList.add('professor');
+                  }
+
+                  if (person instanceof Student) {
+                      listItem.classList.add('student');
+                  }
+
+                  const button = document.createElement('button');
+                  button.innerText = 'Bonjour';
+                  button.onclick = () => {
+                      alert(person.direBonjour());
+                  };
+
+                  const buttonDel = document.createElement('button');
+                  buttonDel.innerText = 'X';
+                  buttonDel.onclick = () => {
+                      if (confirm(`Êtes-vous sûr.e de vouloir supprimer ${person.name} ?`)) {
+                          persons.splice(persons.indexOf(person), 1);
+                          storePersons();
+                          refreshPersons();
+                      }
+                  };
+
+                  listItem.appendChild(title);
+                  listItem.appendChild(button);
+                  listPersons.appendChild(listItem);
+              });
+            }
+
+            function refreshPersons() {
+              clearPersons();
+              displayPersons(currentCourse);
+            }
+
+            function addProfessor() {
+              if (currentCourse.professor) {
+                  alert('Il ne peut y avoir qu\'un seul professeur par cours');
+                  return;
               }
 
-              if (person instanceof Student) {
-                 listItem.classList.add('student');
+              const name = prompt('Nom du professeur');
+              const teaches = prompt('Matière enseignée');
+              const professor = new Professor(name, teaches);
+
+              currentCourse.persons.push(professor);
+              console.log(currentCourse);
+              storeCourses();
+              refreshPersons();
+            }
+
+            function addStudent() {
+              const name = prompt('Nom de l\'élève');
+              const year = prompt('Année ?');
+              const student = new Student(name, year);
+
+              currentCourse.persons.push(student);
+              console.log(currentCourse);
+              storeCourses();
+              refreshPersons();
+            }
+      // ---------------- EXO ROOMS À RENDRE ----------------
+            function addRoom(){
+              const name = prompt('Nom de la salle');
+              const room = new Room(name);
+              currentCourse.rooms.push(room);
+              console.log(currentCourse);
+              const $listRooms = document.getElementById('rooms');
+              const $room = document.createElement('option');
+              $room.innerText = room.room;
+              $listRooms.appendChild($room);
+              storeRooms();
+            }
+            function storeRooms(){
+              const jsonRooms = currentCourse.rooms.map(room => room.toJSON());
+              console.log(jsonRooms);
+              localStorage.setItem('rooms', JSON.stringify(jsonRooms));
+            }
+            // ---------------- EXO ROOMS À RENDRE ----------------
+
+            // 3. Fonctions de gestion du stockage local
+            function coursesToJSON() {
+              return courses.map(course => course.toJSON());
+            }
+
+            function storeCourses() {
+              const jsonCourses = coursesToJSON();
+              localStorage.setItem('courses', JSON.stringify(jsonCourses));
+            }
+
+            function retrieveCourses() {
+              const strCourses = localStorage.getItem('courses');
+
+              if (strCourses) {
+                  const jsonCourses = JSON.parse(strCourses);
+                  courses.push(
+                    ...jsonCourses.map(jsonCourse => {
+                        const course = new Course('');
+                        course.fromJSON(jsonCourse);
+                        return course;
+                  }));
               }
+            }
 
-              const button = document.createElement('button');
+            // 4. Initialisation des événements
+            document.addEventListener("DOMContentLoaded", () => {
+                listCourses = document.getElementById('listCourses');
+                const btnAddCourse = document.getElementById('btnAddCourse');
+                const btnAddProf = document.getElementById('btnAddProf');
+                const btnAddStud = document.getElementById('btnAddStud');
+                const btnAddRoom = document.getElementById('btnAddRoom');
 
-              button.innerText = 'Bonjour';
-              button.onclick = () => {
-                  alert(person.direBonjour());
-              }
+                btnAddCourse.addEventListener('click', addCourse);
+                btnAddProf.addEventListener('click', addProfessor);
+                btnAddStud.addEventListener('click', addStudent);
+                btnAddRoom.addEventListener('click', addRoom);
 
-              const buttonDel = document.createElement('button');
-              buttonDel.innerText = 'X';
-              buttonDel.onclick = () => {
-                if (confirm(`Êtes-vous sûr.e de vouloir supprimer ${person.name} ?`)) {
-                    persons.splice(persons.indexOf(person), 1);
-                    storePersons();
-                    refreshPersons();
-                }
-              }
+                document.addEventListener('courseChange', (event) => {
+                  const divDetails = document.getElementsByClassName('details')[0];
+                  divDetails.classList.add('selected');
+                  currentCourse = event.detail.course;
+                  displayCurrentCourse();
+                });
 
-              listItem.appendChild(title);
-              listItem.appendChild(button);
-              listPersons.appendChild(listItem);
-          });
-      }
-
-      function refreshPersons() {
-          clearPersons();
-          displayPersons(currentCourse);
-      }
-
-      function addProfessor() {
-        if (currentCourse.professor) {
-            alert('Il ne peut y avoir qu\'un seul professeur par cours');
-            return;
-        }
-
-          const name = prompt('Nom du professeur');
-          const teaches = prompt('Matière enseignée');
-          const professor = new Professor(name, teaches);
-
-          currentCourse.persons.push(professor);
-          storeCourses();
-          refreshPersons();
-      }
-
-      function addStudent() {
-          const name = prompt('Nom de l\'élève');
-          const year = prompt('Année ?');
-          const student = new Student(name, year);
-
-          currentCourse.persons.push(student);
-          storeCourses();
-          refreshPersons();
-      }
-
-      function coursesToJSON() {
-          return courses.map(course => course.toJSON());
-      }
-
-      function storeCourses() {
-          const jsonCourses = coursesToJSON();
-          localStorage.setItem('courses', JSON.stringify(jsonCourses));
-      }
-
-      function retrieveCourses() {
-          const strCourses = localStorage.getItem('courses');
-
-          if (strCourses) {
-              const jsonCourses = JSON.parse(strCourses);
-              courses.push(
-                ...jsonCourses.map(jsonCourse => {
-                    const course = new Course('');
-                    course.fromJSON(jsonCourse)
-                    return course;
-              }));
-          }
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-          listCourses = document.getElementById('listCourses');
-          const btnAddCourse = document.getElementById('btnAddCourse');
-          const btnAddProf = document.getElementById('btnAddProf');
-          const btnAddStud = document.getElementById('btnAddStud');
-
-          btnAddCourse.addEventListener('click', addCourse);
-          btnAddProf.addEventListener('click', addProfessor);
-          btnAddStud.addEventListener('click', addStudent);
-
-          document.addEventListener('courseChange', (event) => {
-            const divDetails = document.getElementsByClassName('details')[0];
-
-            divDetails.classList.add('selected');
-            currentCourse = event.detail.course;
-            displayCurrentCourse();
-          });
-
-          retrieveCourses();
-          displayCourses();
-      });
+                retrieveCourses();
+                displayCourses();
+            });
     </script>
   </head>
 
@@ -242,6 +224,11 @@
         <ul id="listPersons"></ul>
         <button id="btnAddProf">Ajouter un professeur</button>
         <button id="btnAddStud">Ajouter un étudiant</button>
+        <!-- CRÉATION DE SALLE -->
+        <button id="btnAddRoom">Crée une salle</button>
+        <select name="rooms" id="rooms">
+          <option value="salle">Salle</option>
+        </select>
       </div>
     </div>
   </body>
